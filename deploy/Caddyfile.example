@@ -1,13 +1,8 @@
 # Add this site block to your existing Caddyfile, then `systemctl reload caddy`.
-# It reverse-proxies the public domain to the Docker container published on
+# It reverse-proxies the public subdomain to the Docker container published on
 # 127.0.0.1:3000 (see docker-compose.yml).
 
-rezflixtv.com {
+lboxd-compare.rezflixtv.com {
 	encode zstd gzip
 	reverse_proxy 127.0.0.1:3000
-}
-
-# Optional: redirect www -> apex
-www.rezflixtv.com {
-	redir https://rezflixtv.com{uri} permanent
 }

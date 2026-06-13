@@ -63,13 +63,13 @@ This publishes the container on **127.0.0.1:3000** (localhost only — Caddy is 
 public entry point). Point Caddy at it (see `deploy/Caddyfile.example`):
 
 ```
-rezflixtv.com {
+lboxd-compare.rezflixtv.com {
     encode zstd gzip
     reverse_proxy 127.0.0.1:3000
 }
 ```
 
-Cloudflare: add an **A record** for the domain → server IP. For TLS behind the
+Cloudflare: add an **A record** for the subdomain → server IP. For TLS behind the
 orange-cloud proxy, set SSL/TLS mode to **Full (strict)** and either use a
 Cloudflare **Origin Certificate** in Caddy, or issue the record DNS-only first so
 Caddy can get a Let's Encrypt cert, then re-enable the proxy.
