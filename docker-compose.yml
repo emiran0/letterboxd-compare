@@ -1,0 +1,13 @@
+services:
+  web:
+    # Pulled on the server; built locally/CI with `docker compose build`.
+    image: ghcr.io/emiran0/letterboxd-compare:latest
+    build: .
+    container_name: rezflix
+    restart: unless-stopped
+    # Bind to localhost only — Caddy on the host reverse-proxies to this.
+    ports:
+      - "127.0.0.1:3000:3000"
+    # Reads TMDB_API_KEY from a .env file next to this compose file.
+    env_file:
+      - .env
