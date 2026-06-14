@@ -49,7 +49,6 @@ async function fetchText(url: string): Promise<string> {
  *  - a bare username (e.g. "dave")           -> that user's watchlist
  *  - a watchlist URL (/user/watchlist/)
  *  - a user list URL (/user/list/name/)
- *  - a films URL (/user/films/)              -> all rated/logged films
  * with or without trailing modifiers (/detail/, /by/rating/, /page/3/) or the
  * leading https://letterboxd.com.
  */
@@ -83,14 +82,11 @@ export function normalizeListUrl(input: string): string {
   if (segments[1] === "watchlist") {
     return `${BASE}/${user}/watchlist`;
   }
-  if (segments[1] === "films") {
-    return `${BASE}/${user}/films`;
-  }
   if (segments[1] === "list" && segments[2]) {
     return `${BASE}/${user}/list/${segments[2]}`;
   }
   throw new LetterboxdError(
-    "Only watchlists, film diaries (/films/) and user lists are supported (e.g. /username/watchlist/, /username/films/, or /username/list/name/).",
+    "Only watchlists and user lists are supported (e.g. /username/watchlist/ or /username/list/name/).",
   );
 }
 
