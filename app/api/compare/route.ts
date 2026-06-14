@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalizeListUrl, scrapeList, LetterboxdError } from "@/lib/letterboxd";
+import { appendLog } from "@/lib/logger";
 import type { CompareResult, FilmRef } from "@/types";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,13 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
+
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+  const ua = req.headers.get("user-agent") ?? "unknown";
+  appendLog({ ts: new Date().toISOString(), ip, ua, url1, url2 });
 
   try {
     const base1 = normalizeListUrl(url1);

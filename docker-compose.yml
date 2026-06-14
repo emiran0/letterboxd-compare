@@ -11,3 +11,7 @@ services:
     # Reads TMDB_API_KEY from a .env file next to this compose file.
     env_file:
       - .env
+    environment:
+      - LOG_DIR=/app/logs
+    volumes:
+      - ./logs:/app/logs
