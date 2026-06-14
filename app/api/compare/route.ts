@@ -56,8 +56,8 @@ export async function POST(req: Request) {
     }
 
     const result: CompareResult = {
-      listA: { title: a.title, total: mapA.size, avatarUrl: a.avatarUrl },
-      listB: { title: b.title, total: mapB.size, avatarUrl: b.avatarUrl },
+      listA: { title: a.title, total: mapA.size, avatarUrl: a.avatarUrl, truncated: a.truncated },
+      listB: { title: b.title, total: mapB.size, avatarUrl: b.avatarUrl, truncated: b.truncated },
       common,
       uniqueA,
       uniqueB,

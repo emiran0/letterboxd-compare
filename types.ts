@@ -24,8 +24,8 @@ export interface FilmInfo {
 
 /** Result of comparing two lists. */
 export interface CompareResult {
-  listA: { title: string; total: number; avatarUrl: string | null };
-  listB: { title: string; total: number; avatarUrl: string | null };
+  listA: { title: string; total: number; avatarUrl: string | null; truncated: boolean };
+  listB: { title: string; total: number; avatarUrl: string | null; truncated: boolean };
   common: FilmRef[];
   uniqueA: FilmRef[];
   uniqueB: FilmRef[];

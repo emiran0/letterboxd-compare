@@ -368,6 +368,17 @@ export default function Home() {
               <div className="progress-bar" style={{ width: `${progressPct}%` }} />
             </div>
           ) : null}
+          {(result.listA.truncated || result.listB.truncated) ? (
+            <p className="truncation-warning">
+              {[
+                result.listA.truncated ? `${result.listA.title} (${result.listA.total.toLocaleString()} films shown)` : null,
+                result.listB.truncated ? `${result.listB.title} (${result.listB.total.toLocaleString()} films shown)` : null,
+              ]
+                .filter(Boolean)
+                .join(" and ")}{" "}
+              is very large — results may be incomplete.
+            </p>
+          ) : null}
 
           <div className="toolbar">
             <input

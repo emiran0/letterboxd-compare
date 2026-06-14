@@ -138,13 +138,15 @@ function parseTotalPages(html: string): number {
     const n = Number($(el).text().trim());
     if (Number.isFinite(n) && n > max) max = n;
   });
-  return Math.min(max, MAX_PAGES);
+  return max;
 }
 
 export interface ScrapedList {
   title: string;
   avatarUrl: string | null;
   films: FilmRef[];
+  /** True when the list exceeded MAX_PAGES and was silently truncated. */
+  truncated: boolean;
 }
 
 /**
@@ -157,7 +159,9 @@ export async function scrapeList(baseUrl: string): Promise<ScrapedList> {
   const user = baseUrl.replace(`${BASE}/`, "").split("/")[0];
   const title = parseListTitle(firstHtml, user);
   const avatarUrl = AVATAR_OVERRIDES[baseUrl] ?? parseAvatar(firstHtml, user);
-  const totalPages = parseTotalPages(firstHtml);
+  const rawPages = parseTotalPages(firstHtml);
+  const truncated = rawPages > MAX_PAGES;
+  const totalPages = Math.min(rawPages, MAX_PAGES);
 
   const films: FilmRef[] = parseFilms(firstHtml);
 
@@ -171,7 +175,7 @@ export async function scrapeList(baseUrl: string): Promise<ScrapedList> {
     }
   }
 
-  return { title, avatarUrl, films };
+  return { title, avatarUrl, films, truncated };
 }
 
 /**
