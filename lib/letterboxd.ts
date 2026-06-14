@@ -10,7 +10,11 @@ const BASE = "https://letterboxd.com";
 /** Hard cap on how many pages we will fetch from a single list (politeness + safety). */
 const MAX_PAGES = 60;
 
-export class LetterboxdError extends Error {}
+export class LetterboxdError extends Error {
+  constructor(message: string, public readonly httpStatus?: number) {
+    super(message);
+  }
+}
 
 /**
  * Custom avatar overrides for specific lists, keyed by normalized base URL.
@@ -32,13 +36,13 @@ async function fetchText(url: string): Promise<string> {
     throw new LetterboxdError("Couldn't reach Letterboxd — it may be down or blocking requests. Try again shortly.");
   }
   if (res.status === 404) {
-    throw new LetterboxdError("List not found — double-check the URL or username.");
+    throw new LetterboxdError("List not found — double-check the URL or username.", 404);
   }
   if (res.status === 429) {
-    throw new LetterboxdError("Letterboxd is rate-limiting requests. Wait a moment and try again.");
+    throw new LetterboxdError("Letterboxd is rate-limiting requests. Wait a moment and try again.", 429);
   }
   if (!res.ok) {
-    throw new LetterboxdError(`Letterboxd returned an error (HTTP ${res.status}). Try again shortly.`);
+    throw new LetterboxdError(`Letterboxd returned an error (HTTP ${res.status}). Try again shortly.`, res.status);
   }
   return res.text();
 }
@@ -160,7 +164,7 @@ export async function scrapeList(baseUrl: string): Promise<ScrapedList> {
   const title = parseListTitle(firstHtml, user);
   const avatarUrl = AVATAR_OVERRIDES[baseUrl] ?? parseAvatar(firstHtml, user);
   const rawPages = parseTotalPages(firstHtml);
-  const truncated = rawPages > MAX_PAGES;
+  let truncated = rawPages > MAX_PAGES;
   const totalPages = Math.min(rawPages, MAX_PAGES);
 
   const films: FilmRef[] = parseFilms(firstHtml);
@@ -170,7 +174,18 @@ export async function scrapeList(baseUrl: string): Promise<ScrapedList> {
     const CONCURRENCY = 5;
     for (let i = 0; i < pages.length; i += CONCURRENCY) {
       const batch = pages.slice(i, i + CONCURRENCY);
-      const htmls = await Promise.all(batch.map((p) => fetchText(`${baseUrl}/page/${p}/`)));
+      let htmls: string[];
+      try {
+        htmls = await Promise.all(batch.map((p) => fetchText(`${baseUrl}/page/${p}/`)));
+      } catch (e) {
+        // Some Letterboxd endpoints (e.g. /films/) block paginated access with 403.
+        // Stop quietly and flag the result as truncated.
+        if (e instanceof LetterboxdError && e.httpStatus === 403) {
+          truncated = true;
+          break;
+        }
+        throw e;
+      }
       for (const html of htmls) films.push(...parseFilms(html));
     }
   }
