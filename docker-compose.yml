@@ -1,17 +1,38 @@
 services:
   web:
-    # Pulled on the server; built locally/CI with `docker compose build`.
+    # Pulled on the server; built locally with `docker build` or via CI.
     image: ghcr.io/emiran0/letterboxd-compare:latest
-    build: .
-    container_name: rezflix
+    # build: .  # Uncomment to build the image locally instead of pulling from ghcr.io.
+    container_name: lbxd-compare
     restart: unless-stopped
-    # Bind to localhost only — Caddy on the host reverse-proxies to this.
-    ports:
-      - "127.0.0.1:3000:3000"
-    # Reads TMDB_API_KEY from a .env file next to this compose file.
+
+    # ---- Networking: choose ONE of the two options below ----
+
+    # Option A — Caddy running on the HOST (not in Docker).
+    # Caddy reverse-proxies from the host to this container via localhost.
+    # ports:
+    #   - "127.0.0.1:3000:3000"
+
+    # Option B — Caddy running as a Docker container on a shared network.
+    # The container name (lbxd-compare) is used as the upstream in your Caddyfile:
+    #   reverse_proxy lbxd-compare:3000
+    # Replace `caddy_default` with whatever your Caddy network is named.
+    networks:
+      - proxy
+
+    # Reads TMDB_API_KEY (and any other secrets) from a .env file.
     env_file:
       - .env
     environment:
+      # Directory inside the container where compare.log is written.
       - LOG_DIR=/app/logs
     volumes:
+      # Persist logs across container restarts.
       - ./logs:/app/logs
+
+# ---- Required for Option B only ----
+# Declare the external network created by your Caddy compose stack.
+networks:
+  proxy:
+    external: true
+    name: caddy_default
