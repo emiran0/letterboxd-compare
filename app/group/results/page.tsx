@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { GroupCompareResult, FilmRef, FilmInfo } from "@/types";
 import FilmCard from "@/components/FilmCard";
 import { GROUP_URLS_KEY } from "@/lib/group";
+import { DownloadIcon } from "@/components/icons";
 import { buildCsv, downloadCsv, slugifyName } from "@/lib/csv";
 
 /**
@@ -172,7 +173,7 @@ export default function GroupResultsPage() {
                   disabled={result.common.length === 0}
                   title="Export these films as a Letterboxd-importable CSV"
                 >
-                  ⬇ Export
+                  <DownloadIcon /> Export
                 </button>
               </div>
             </div>
@@ -224,7 +225,7 @@ export default function GroupResultsPage() {
                       disabled={(result.onlyIn[onlyInIndex]?.length ?? 0) === 0}
                       title="Export these films as a Letterboxd-importable CSV"
                     >
-                      ⬇ Export
+                      <DownloadIcon /> Export
                     </button>
                   </div>
                 </div>

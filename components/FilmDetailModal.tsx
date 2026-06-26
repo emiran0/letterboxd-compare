@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { FilmRef, FilmInfo, FilmDetail } from "@/types";
+import { CloseIcon } from "@/components/icons";
 
 function runtimeLabel(min: number | null): string | null {
   if (!min) return null;
@@ -74,7 +76,10 @@ export default function FilmDetailModal({
     detail?.letterboxdUrl ?? info?.letterboxdUrl ?? `https://letterboxd.com/film/${film.slug}/`;
   const runtime = runtimeLabel(detail?.runtime ?? null);
 
-  return (
+  // Portal to <body>: an ancestor column has backdrop-filter, which would
+  // otherwise make it the containing block for this position:fixed overlay and
+  // trap the modal inside the column instead of centering it on screen.
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal film-modal"
@@ -86,7 +91,7 @@ export default function FilmDetailModal({
         onClick={(e) => e.stopPropagation()}
       >
         <button type="button" className="modal-close film-modal-close" onClick={onClose} aria-label="Close">
-          ✕
+          <CloseIcon />
         </button>
 
         <div className="film-modal-body">
@@ -159,6 +164,7 @@ export default function FilmDetailModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
