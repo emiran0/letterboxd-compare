@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { GroupCompareResult, FilmRef, FilmInfo } from "@/types";
 import FilmCard from "@/components/FilmCard";
 import { GROUP_URLS_KEY } from "@/lib/group";
+import { buildCsv, downloadCsv, slugifyName } from "@/lib/csv";
 
 /**
  * Dedicated group results page (issue #6).
@@ -164,6 +165,15 @@ export default function GroupResultsPage() {
               <h2>In common</h2>
               <div className="head-right">
                 <span className="count">{result.common.length}</span>
+                <button
+                  type="button"
+                  className="export"
+                  onClick={() => downloadCsv("letterboxd-group-common.csv", buildCsv(result.common, infoMap))}
+                  disabled={result.common.length === 0}
+                  title="Export these films as a Letterboxd-importable CSV"
+                >
+                  ⬇ Export
+                </button>
               </div>
             </div>
             {result.common.length === 0 ? (
@@ -202,6 +212,20 @@ export default function GroupResultsPage() {
                   <h2>Only in {result.lists[onlyInIndex]?.title}</h2>
                   <div className="head-right">
                     <span className="count">{result.onlyIn[onlyInIndex]?.length ?? 0}</span>
+                    <button
+                      type="button"
+                      className="export"
+                      onClick={() =>
+                        downloadCsv(
+                          `letterboxd-only-in-${slugifyName(result.lists[onlyInIndex]?.title ?? "list")}.csv`,
+                          buildCsv(result.onlyIn[onlyInIndex] ?? [], infoMap),
+                        )
+                      }
+                      disabled={(result.onlyIn[onlyInIndex]?.length ?? 0) === 0}
+                      title="Export these films as a Letterboxd-importable CSV"
+                    >
+                      ⬇ Export
+                    </button>
                   </div>
                 </div>
                 {(result.onlyIn[onlyInIndex]?.length ?? 0) === 0 ? (

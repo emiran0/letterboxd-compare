@@ -4,50 +4,12 @@ import { useMemo, useState } from "react";
 import type { CompareResult, FilmRef, FilmInfo } from "@/types";
 import FilmCard from "@/components/FilmCard";
 import GroupModal from "@/components/GroupModal";
+import { buildCsv, downloadCsv, slugifyName } from "@/lib/csv";
 
 type SortKey = "default" | "title" | "year" | "rating";
 type SortDir = "asc" | "desc";
 
 const REZFLIX_URL = "https://letterboxd.com/emiran/list/rezflix-library/";
-
-/** Escape a value for CSV (quote if it contains comma/quote/newline). */
-function csvEscape(value: string): string {
-  return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
-}
-
-/**
- * Build a Letterboxd-importable CSV. Mirrors Letterboxd's own export format
- * (Name, Year, Letterboxd URI). The URI is an exact film link, so the importer
- * matches reliably even before TMDB titles have resolved.
- */
-function buildCsv(films: FilmRef[], infoMap: Map<string, FilmInfo>): string {
-  const header = "Name,Year,Letterboxd URI";
-  const rows = films.map((f) => {
-    const info = infoMap.get(f.slug);
-    const name = info?.title ?? f.name;
-    const year = (info?.year ?? f.year ?? "").toString();
-    const uri = info?.letterboxdUrl ?? `https://letterboxd.com/film/${f.slug}/`;
-    return [csvEscape(name), csvEscape(year), csvEscape(uri)].join(",");
-  });
-  return [header, ...rows].join("\r\n");
-}
-
-function slugifyName(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "list";
-}
-
-/** Trigger a client-side download of a CSV string. */
-function downloadCsv(filename: string, content: string) {
-  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
 
 interface Controls {
   filter: string;
