@@ -23,6 +23,10 @@ export default function GroupResultsPage() {
   const [resolved, setResolved] = useState(0);
   const [total, setTotal] = useState(0);
 
+  // Which list's "Only in" section is shown (issue #7). Revealed once Commons
+  // has fully resolved.
+  const [onlyInIndex, setOnlyInIndex] = useState(0);
+
   // Guard against React's double-invoked effects (dev strict mode).
   const started = useRef(false);
 
@@ -172,6 +176,46 @@ export default function GroupResultsPage() {
               </div>
             )}
           </section>
+
+          {/* "Only in" picker — revealed once Commons has fully loaded (#7). */}
+          {!resolving ? (
+            <>
+              <div className="toolbar">
+                <div className="control">
+                  <label htmlFor="onlyin-pick">Show only in</label>
+                  <select
+                    id="onlyin-pick"
+                    value={onlyInIndex}
+                    onChange={(e) => setOnlyInIndex(Number(e.target.value))}
+                  >
+                    {result.lists.map((l, i) => (
+                      <option key={i} value={i}>
+                        {l.title} ({result.onlyIn[i].length})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <section className="column">
+                <div className="column-head">
+                  <h2>Only in {result.lists[onlyInIndex]?.title}</h2>
+                  <div className="head-right">
+                    <span className="count">{result.onlyIn[onlyInIndex]?.length ?? 0}</span>
+                  </div>
+                </div>
+                {(result.onlyIn[onlyInIndex]?.length ?? 0) === 0 ? (
+                  <p className="empty">Every film on this list is shared with another.</p>
+                ) : (
+                  <div className="grid">
+                    {result.onlyIn[onlyInIndex].map((f) => (
+                      <FilmCard key={f.slug} film={f} info={infoMap.get(f.slug)} />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </>
+          ) : null}
         </>
       ) : null}
     </main>
