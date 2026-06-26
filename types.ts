@@ -30,3 +30,20 @@ export interface CompareResult {
   uniqueA: FilmRef[];
   uniqueB: FilmRef[];
 }
+
+/** Display metadata for one list in a group comparison. */
+export interface ListMeta {
+  title: string;
+  total: number;
+  avatarUrl: string | null;
+}
+
+/** Result of comparing N (≥2) lists. */
+export interface GroupCompareResult {
+  /** One entry per input list, in input order. */
+  lists: ListMeta[];
+  /** Films present in every list. */
+  common: FilmRef[];
+  /** Per-list films present in that list and no other. Same length/order as `lists`. */
+  onlyIn: FilmRef[][];
+}
