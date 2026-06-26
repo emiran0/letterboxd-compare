@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     .filter((f) => f && typeof f.slug === "string")
     .map((f) => ({ slug: f.slug, name: f.name ?? f.slug, year: f.year ?? null }));
 
-  // Reject oversized batches rather than silently dropping the overflow — a
+  // Reject oversized batches rather than silently dropping the overflow. A
   // silent slice would leave some films unresolved while the client's progress
   // still reaches 100%. Callers (incl. the group page) chunk well under the cap.
   if (clean.length > MAX_PER_REQUEST) {

@@ -29,10 +29,10 @@ async function fetchText(url: string): Promise<string> {
       cache: "no-store",
     });
   } catch {
-    throw new LetterboxdError("Couldn't reach Letterboxd — it may be down or blocking requests. Try again shortly.");
+    throw new LetterboxdError("Couldn't reach Letterboxd. It may be down or blocking requests, try again shortly.");
   }
   if (res.status === 404) {
-    throw new LetterboxdError("List not found — double-check the URL or username.");
+    throw new LetterboxdError("List not found. Double-check the URL or username.");
   }
   if (res.status === 429) {
     throw new LetterboxdError("Letterboxd is rate-limiting requests. Wait a moment and try again.");
@@ -67,7 +67,7 @@ export function normalizeListUrl(input: string): string {
     const url = new URL(withProto);
     pathname = url.pathname;
   } catch {
-    // Not a full URL — treat the input as a bare path.
+    // Not a full URL, treat the input as a bare path.
     pathname = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   }
 
@@ -115,7 +115,7 @@ async function expandShortLink(input: string): Promise<string> {
       redirect: "follow",
     });
   } catch {
-    throw new LetterboxdError("Couldn't expand that boxd.it share link — try pasting the full list URL.");
+    throw new LetterboxdError("Couldn't expand that boxd.it share link. Try pasting the full list URL.");
   }
 
   let finalHost = "";

@@ -171,7 +171,7 @@ export default function Home() {
       return;
     }
     if (url1.trim().toLowerCase() === url2.trim().toLowerCase()) {
-      setError("Both fields point to the same list — enter two different lists to compare.");
+      setError("Both fields point to the same list. Enter two different lists to compare.");
       return;
     }
 
@@ -189,7 +189,7 @@ export default function Home() {
           body: JSON.stringify({ url1, url2 }),
         });
       } catch {
-        throw new Error("Network error — couldn't reach the server. Check your connection and try again.");
+        throw new Error("Network error. Couldn't reach the server, check your connection and try again.");
       }
 
       let data: any = {};
@@ -246,8 +246,7 @@ export default function Home() {
       <header className="hero">
         <h1>Letterboxd List Compare</h1>
         <p className="subtitle">
-          Paste two list URLs — or just a username for their watchlist — to see what they share and
-          what&apos;s unique to each.
+          See what two Letterboxd lists share and what&apos;s unique to each.
         </p>
       </header>
 
@@ -259,7 +258,7 @@ export default function Home() {
               id="url1"
               value={url1}
               onChange={(e) => setUrl1(e.target.value)}
-              placeholder="username or https://letterboxd.com/user/watchlist/"
+              placeholder="Username or list URL"
               autoComplete="off"
             />
           </div>
@@ -269,31 +268,29 @@ export default function Home() {
           <div className="field">
             <div className="field-head">
               <label htmlFor="url2">List 2</label>
-              <span
-                className="shortcut"
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
+                className="rez-fill"
                 onClick={() => setUrl2(REZFLIX_URL)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setUrl2(REZFLIX_URL);
-                  }
-                }}
                 title="Fill List 2 with the REZFLIX Library list"
               >
-                Check <span className="rez">REZFLIX</span> Library
-              </span>
+                <span className="rez-fill-icon" aria-hidden="true">↧</span>
+                Fill <span className="rez">REZFLIX</span> Library
+              </button>
             </div>
             <input
               id="url2"
               value={url2}
               onChange={(e) => setUrl2(e.target.value)}
-              placeholder="username or https://letterboxd.com/user/list/name/"
+              placeholder="Username or list URL"
               autoComplete="off"
             />
           </div>
         </div>
+        <p className="form-hint">
+          Enter a username for that person&apos;s watchlist, or paste a Letterboxd URL for any other
+          list.
+        </p>
         <div className="row">
           <button className="primary" type="submit" disabled={loading || !url1 || !url2}>
             {loading ? "Comparing…" : "Compare"}

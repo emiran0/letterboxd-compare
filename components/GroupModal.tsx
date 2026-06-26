@@ -12,7 +12,7 @@ const MIN_FIELDS = 3;
  *
  * Open/close behaviour: backdrop click, Escape, and the close button all
  * dismiss it, and body scroll is locked while open. The body holds a dynamic
- * set of list inputs — at least three, with no hard cap, each removable down to
+ * set of list inputs, at least three, with no hard cap, each removable down to
  * the minimum. Compare stashes the entered URLs in sessionStorage and navigates
  * to /group/results, which runs the multi-list comparison. The classic two-list
  * flow on the home page is untouched.
@@ -87,7 +87,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
           </button>
         </div>
         <p className="modal-sub">
-          Compare three or more lists at once and see what every list shares — plus what&apos;s unique
+          Compare three or more lists at once and see what every list shares, plus what&apos;s unique
           to each. Paste list URLs or usernames.
         </p>
         <div className="modal-body">

@@ -56,7 +56,7 @@ export default function GroupResultsPage() {
             body: JSON.stringify({ urls }),
           });
         } catch {
-          throw new Error("Network error — couldn't reach the server. Check your connection and try again.");
+          throw new Error("Network error. Couldn't reach the server, check your connection and try again.");
         }
 
         let data: { error?: string } & Partial<GroupCompareResult> = {};
@@ -187,7 +187,7 @@ export default function GroupResultsPage() {
             )}
           </section>
 
-          {/* "Only in" picker — revealed once Commons has fully loaded (#7). */}
+          {/* "Only in" picker, revealed once Commons has fully loaded (#7). */}
           {!resolving ? (
             <>
               <div className="toolbar">
