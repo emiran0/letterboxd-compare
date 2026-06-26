@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { normalizeListUrl, scrapeList, LetterboxdError, type ScrapedList } from "@/lib/letterboxd";
+import { resolveListUrl, scrapeList, LetterboxdError, type ScrapedList } from "@/lib/letterboxd";
 import { appendLog } from "@/lib/logger";
 import type { CompareResult, GroupCompareResult, FilmRef } from "@/types";
 
@@ -48,10 +48,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Normalize and de-duplicate while preserving input order.
+    // Expand short links + normalize (in parallel), then de-duplicate while
+    // preserving input order.
+    const resolvedBases = await Promise.all(provided.map((u) => resolveListUrl(u)));
     const bases: string[] = [];
-    for (const u of provided) {
-      const base = normalizeListUrl(u);
+    for (const base of resolvedBases) {
       if (!bases.includes(base)) bases.push(base);
     }
     if (bases.length < 2) {
