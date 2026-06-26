@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { CompareResult, FilmRef, FilmInfo } from "@/types";
 import FilmCard from "@/components/FilmCard";
+import GroupModal from "@/components/GroupModal";
 
 type SortKey = "default" | "title" | "year" | "rating";
 type SortDir = "asc" | "desc";
@@ -154,6 +155,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CompareResult | null>(null);
+  const [groupOpen, setGroupOpen] = useState(false);
 
   const [infoMap, setInfoMap] = useState<Map<string, FilmInfo>>(new Map());
   const [resolved, setResolved] = useState(0);
@@ -334,9 +336,14 @@ export default function Home() {
           <button className="primary" type="submit" disabled={loading || !url1 || !url2}>
             {loading ? "Comparing…" : "Compare"}
           </button>
+          <button type="button" className="ghost" onClick={() => setGroupOpen(true)}>
+            Group Comparison →
+          </button>
         </div>
         {error ? <p className="error">{error}</p> : null}
       </form>
+
+      <GroupModal open={groupOpen} onClose={() => setGroupOpen(false)} />
 
       {result ? (
         <>
