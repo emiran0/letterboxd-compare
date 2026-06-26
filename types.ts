@@ -20,6 +20,38 @@ export interface FilmInfo {
   rating: number | null;
   /** Link back to the Letterboxd film page. */
   letterboxdUrl: string;
+  /** Resolved TMDB movie id, or null if the film couldn't be matched. */
+  tmdbId: number | null;
+}
+
+/**
+ * Rich, on-demand film metadata for the detail view. Fetched lazily from TMDB
+ * only when a user opens a card, so the comparison/resolve flow stays light.
+ */
+export interface FilmDetail {
+  slug: string;
+  tmdbId: number | null;
+  title: string;
+  /** Original-language title, shown when it differs from `title`. */
+  originalTitle: string | null;
+  year: number | null;
+  /** Runtime in minutes, or null if TMDB has none. */
+  runtime: number | null;
+  tagline: string | null;
+  overview: string | null;
+  genres: string[];
+  /** Larger poster than the card thumbnail, or null. */
+  posterUrl: string | null;
+  /** Wide backdrop image for the modal header, or null. */
+  backdropUrl: string | null;
+  rating: number | null;
+  voteCount: number;
+  director: string | null;
+  /** Top-billed cast names. */
+  cast: string[];
+  letterboxdUrl: string;
+  /** Link to the film's TMDB page, or null if unresolved. */
+  tmdbUrl: string | null;
 }
 
 /** Result of comparing two lists. */
