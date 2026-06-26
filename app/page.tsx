@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { CompareResult, FilmRef, FilmInfo } from "@/types";
 import FilmCard from "@/components/FilmCard";
 import GroupModal from "@/components/GroupModal";
+import { SwapIcon, DownloadIcon, InfoIcon, ChevronDownIcon } from "@/components/icons";
 import { buildCsv, downloadCsv, slugifyName } from "@/lib/csv";
 
 type SortKey = "default" | "title" | "year" | "rating";
@@ -94,7 +95,7 @@ function Column({
             disabled={shown.length === 0}
             title="Export these films as a Letterboxd-importable CSV"
           >
-            ⬇ Export
+            <DownloadIcon /> Export
           </button>
         </div>
       </div>
@@ -131,6 +132,9 @@ export default function Home() {
 
   // mobile-only: which section tab is active (ignored on desktop via CSS)
   const [activeTab, setActiveTab] = useState<"common" | "a" | "b">("common");
+
+  // Export help line: collapsible, starts expanded.
+  const [infoOpen, setInfoOpen] = useState(true);
 
   const controls: Controls = { filter, sortKey, sortDir, minRating };
 
@@ -263,7 +267,7 @@ export default function Home() {
             />
           </div>
           <button type="button" className="swap" onClick={swap} title="Swap lists" aria-label="Swap lists">
-            ⇄
+            <SwapIcon />
           </button>
           <div className="field">
             <div className="field-head">
@@ -274,7 +278,7 @@ export default function Home() {
                 onClick={() => setUrl2(REZFLIX_URL)}
                 title="Fill List 2 with the REZFLIX Library list"
               >
-                <span className="rez-fill-icon" aria-hidden="true">↧</span>
+                <DownloadIcon className="rez-fill-icon" />
                 Fill <span className="rez">REZFLIX</span> Library
               </button>
             </div>
@@ -373,14 +377,26 @@ export default function Home() {
             </div>
           </div>
 
-          <p className="info">
-            <span className="info-icon">ℹ</span>
-            <span>
-              <strong>Export</strong> saves a section as a Letterboxd-compatible CSV. Create a new
-              list on Letterboxd, choose <em>Import</em>, and upload the file to rebuild that section
-              as a list in seconds. Exports respect your current filter &amp; sort.
-            </span>
-          </p>
+          <div className={`info ${infoOpen ? "open" : ""}`}>
+            <button
+              type="button"
+              className="info-toggle"
+              onClick={() => setInfoOpen((o) => !o)}
+              aria-expanded={infoOpen}
+              aria-controls="export-help"
+            >
+              <InfoIcon className="info-icon" />
+              <span className="info-toggle-label">About CSV export</span>
+              <ChevronDownIcon className="info-chevron" />
+            </button>
+            {infoOpen ? (
+              <div className="info-body" id="export-help">
+                <strong>Export</strong> saves a section as a Letterboxd-compatible CSV. Create a new
+                list on Letterboxd, choose <em>Import</em>, and upload the file to rebuild that
+                section as a list in seconds. Exports respect your current filter &amp; sort.
+              </div>
+            ) : null}
+          </div>
 
           <div className="tabs" role="tablist">
             <button

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GROUP_URLS_KEY } from "@/lib/group";
+import { CloseIcon, PlusIcon } from "@/components/icons";
 
 /** Minimum number of list fields a group comparison needs. */
 const MIN_FIELDS = 3;
@@ -83,7 +84,7 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
         <div className="modal-head">
           <h2 id="group-modal-title">Group Comparison</h2>
           <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
-            ✕
+            <CloseIcon />
           </button>
         </div>
         <p className="modal-sub">
@@ -113,14 +114,14 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
                     aria-label={`Remove list ${i + 1}`}
                     title={urls.length <= MIN_FIELDS ? `At least ${MIN_FIELDS} lists required` : "Remove this list"}
                   >
-                    ✕
+                    <CloseIcon />
                   </button>
                 </div>
               </div>
             ))}
           </div>
           <button type="button" className="ghost group-add" onClick={addField}>
-            + Add list
+            <PlusIcon className="btn-icon" /> Add list
           </button>
         </div>
         {error ? <p className="error">{error}</p> : null}
