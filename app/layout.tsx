@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Letterboxd List Compare",
-  description: "Compare two Letterboxd lists — see what's common and what's unique to each.",
+  description: "Compare two Letterboxd lists to see what's common and what's unique to each.",
 };
 
 export const viewport: Viewport = {

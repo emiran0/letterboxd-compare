@@ -70,7 +70,7 @@ async function getMovie(id: number): Promise<any | null> {
  * Resolve a Letterboxd film to TMDB display metadata.
  *
  * Strategy (cached by slug, since the mapping is permanent):
- *  1. TMDB title+year search — fast, no extra Letterboxd request.
+ *  1. TMDB title+year search (fast, no extra Letterboxd request).
  *  2. Fallback: read the exact TMDB id from the Letterboxd film page,
  *     then fetch canonical details. Covers titles that search gets wrong.
  *  3. Last resort: return the Letterboxd name with no poster.

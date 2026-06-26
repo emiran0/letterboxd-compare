@@ -99,23 +99,47 @@ h1 {
   margin-bottom: 0.35rem;
 }
 
-.shortcut {
+/* Subtle pill that fills List 2 with the REZFLIX Library list. */
+.rez-fill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-size: 0.72rem;
+  line-height: 1;
   color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.28rem 0.6rem;
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.shortcut:hover {
+.rez-fill:hover,
+.rez-fill:focus-visible {
+  background: var(--panel-2);
+  border-color: #e53935;
   color: var(--text);
-  text-decoration: underline;
+  outline: none;
 }
 
-.shortcut .rez {
+.rez-fill-icon {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.rez {
   color: #e53935;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+/* Compact guidance under the list inputs. */
+.form-hint {
+  margin: 0.7rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
 .field input {

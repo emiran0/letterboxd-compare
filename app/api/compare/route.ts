@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     }
     if (provided.length > MAX_LISTS) {
       return NextResponse.json(
-        { error: `Too many lists — compare at most ${MAX_LISTS} at once.` },
+        { error: `Too many lists. Compare at most ${MAX_LISTS} at once.` },
         { status: 400 },
       );
     }
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     }
     if (bases.length < 2) {
       return NextResponse.json(
-        { error: "Those fields point to the same list — enter different lists to compare." },
+        { error: "Those fields point to the same list. Enter different lists to compare." },
         { status: 400 },
       );
     }
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
         ? `“${empty.title}”`
         : `List ${scraped.indexOf(empty) + 1}`;
       return NextResponse.json(
-        { error: `${label} has no films — it may be private, empty, or the URL is wrong.` },
+        { error: `${label} has no films. It may be private, empty, or the URL is wrong.` },
         { status: 400 },
       );
     }
