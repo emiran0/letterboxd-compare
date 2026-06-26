@@ -8,8 +8,8 @@ export interface LogEntry {
   ts: string;
   ip: string;
   ua: string;
-  url1: string;
-  url2: string;
+  /** Compared list URLs: 2 for a classic compare, N for a group compare. */
+  urls: string[];
 }
 
 export function appendLog(entry: LogEntry): void {
