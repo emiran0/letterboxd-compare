@@ -1,18 +1,33 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/** Minimum number of list fields a group comparison needs. */
+const MIN_FIELDS = 3;
 
 /**
- * Group Comparison modal shell (issue #3).
+ * Group Comparison modal (issues #3, #4).
  *
- * Pure presentation + open/close behaviour: backdrop click, Escape, and the
- * close button all dismiss it, and body scroll is locked while open. The list
- * inputs and the compare action are filled in by later issues (#4, #5+); for
- * now the body is a scaffold so the entry point can be wired and tested on its
- * own. The classic two-list flow on the home page is untouched.
+ * Open/close behaviour: backdrop click, Escape, and the close button all
+ * dismiss it, and body scroll is locked while open. The body holds a dynamic
+ * set of list inputs — at least three, with no hard cap, each removable down to
+ * the minimum. Wiring these up to the multi-list compare is a later issue
+ * (#5/#6); for now the inputs are self-contained. The classic two-list flow on
+ * the home page is untouched.
  */
 export default function GroupModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const [urls, setUrls] = useState<string[]>(() => Array(MIN_FIELDS).fill(""));
+
+  function updateField(i: number, value: string) {
+    setUrls((prev) => prev.map((u, idx) => (idx === i ? value : u)));
+  }
+  function addField() {
+    setUrls((prev) => [...prev, ""]);
+  }
+  function removeField(i: number) {
+    setUrls((prev) => (prev.length <= MIN_FIELDS ? prev : prev.filter((_, idx) => idx !== i)));
+  }
 
   // Close on Escape and lock background scroll while open.
   useEffect(() => {
@@ -54,8 +69,37 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
           to each. Paste list URLs or usernames.
         </p>
         <div className="modal-body">
-          {/* List inputs land here in #4; the multi-list compare in #5/#6. */}
-          <p className="modal-placeholder">List inputs coming next.</p>
+          <div className="group-fields">
+            {urls.map((value, i) => (
+              <div className="group-field" key={i}>
+                <label className="group-field-label" htmlFor={`group-url-${i}`}>
+                  List {i + 1}
+                </label>
+                <div className="group-field-row">
+                  <input
+                    id={`group-url-${i}`}
+                    value={value}
+                    onChange={(e) => updateField(i, e.target.value)}
+                    placeholder="username or https://letterboxd.com/user/list/name/"
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    className="group-remove"
+                    onClick={() => removeField(i)}
+                    disabled={urls.length <= MIN_FIELDS}
+                    aria-label={`Remove list ${i + 1}`}
+                    title={urls.length <= MIN_FIELDS ? `At least ${MIN_FIELDS} lists required` : "Remove this list"}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button type="button" className="ghost group-add" onClick={addField}>
+            + Add list
+          </button>
         </div>
       </div>
     </div>
