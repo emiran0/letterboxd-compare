@@ -90,6 +90,56 @@ export function normalizeListUrl(input: string): string {
   );
 }
 
+/**
+ * Expand a Letterboxd `boxd.it` short share link to its full URL by following
+ * the redirect. The mobile app's "Share" button only offers this short form
+ * (e.g. https://boxd.it/502LY → https://letterboxd.com/user/list/name/), which
+ * normalizeListUrl can't parse on its own. Non-boxd.it input is returned as-is.
+ */
+async function expandShortLink(input: string): Promise<string> {
+  let withProto: string;
+  let host: string;
+  try {
+    withProto = /^https?:\/\//i.test(input) ? input : `https://${input}`;
+    host = new URL(withProto).host.toLowerCase();
+  } catch {
+    return input;
+  }
+  if (host !== "boxd.it" && !host.endsWith(".boxd.it")) return input;
+
+  let res: Response;
+  try {
+    res = await fetch(withProto, {
+      method: "HEAD",
+      headers: { "User-Agent": USER_AGENT },
+      redirect: "follow",
+    });
+  } catch {
+    throw new LetterboxdError("Couldn't expand that boxd.it share link — try pasting the full list URL.");
+  }
+
+  let finalHost = "";
+  try {
+    finalHost = new URL(res.url).host.toLowerCase();
+  } catch {
+    /* fall through to the error below */
+  }
+  if (finalHost !== "letterboxd.com" && !finalHost.endsWith(".letterboxd.com")) {
+    throw new LetterboxdError("That boxd.it link doesn't point to a Letterboxd list.");
+  }
+  return res.url;
+}
+
+/**
+ * Resolve any pasted input to a normalized list base URL, expanding boxd.it
+ * short share links first. This is the async entry point the API should use;
+ * normalizeListUrl stays sync for the full-URL/username cases it already covers.
+ */
+export async function resolveListUrl(input: string): Promise<string> {
+  const expanded = await expandShortLink(input.trim());
+  return normalizeListUrl(expanded);
+}
+
 function splitNameAndYear(fullName: string): { name: string; year: number | null } {
   const match = fullName.match(/^(.*?)\s+\((\d{4})\)\s*$/);
   if (match) return { name: match[1].trim(), year: Number(match[2]) };
