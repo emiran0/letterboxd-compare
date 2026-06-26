@@ -37,8 +37,17 @@ export async function POST(req: Request) {
 
   const clean = films
     .filter((f) => f && typeof f.slug === "string")
-    .slice(0, MAX_PER_REQUEST)
     .map((f) => ({ slug: f.slug, name: f.name ?? f.slug, year: f.year ?? null }));
+
+  // Reject oversized batches rather than silently dropping the overflow — a
+  // silent slice would leave some films unresolved while the client's progress
+  // still reaches 100%. Callers (incl. the group page) chunk well under the cap.
+  if (clean.length > MAX_PER_REQUEST) {
+    return NextResponse.json(
+      { error: `Too many films in one request (max ${MAX_PER_REQUEST}). Send them in smaller batches.` },
+      { status: 400 },
+    );
+  }
 
   const resolved = await pool(clean, CONCURRENCY, resolveFilm);
   return NextResponse.json({ films: resolved });
