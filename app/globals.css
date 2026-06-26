@@ -779,3 +779,21 @@ button.primary:disabled {
 .group-add {
   margin-top: 1rem;
 }
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.back-link {
+  color: var(--blue);
+  transition: opacity 0.15s;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}

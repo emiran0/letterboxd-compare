@@ -1,23 +1,27 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { GROUP_URLS_KEY } from "@/lib/group";
 
 /** Minimum number of list fields a group comparison needs. */
 const MIN_FIELDS = 3;
 
 /**
- * Group Comparison modal (issues #3, #4).
+ * Group Comparison modal (issues #3, #4, #6).
  *
  * Open/close behaviour: backdrop click, Escape, and the close button all
  * dismiss it, and body scroll is locked while open. The body holds a dynamic
  * set of list inputs — at least three, with no hard cap, each removable down to
- * the minimum. Wiring these up to the multi-list compare is a later issue
- * (#5/#6); for now the inputs are self-contained. The classic two-list flow on
- * the home page is untouched.
+ * the minimum. Compare stashes the entered URLs in sessionStorage and navigates
+ * to /group/results, which runs the multi-list comparison. The classic two-list
+ * flow on the home page is untouched.
  */
 export default function GroupModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const router = useRouter();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [urls, setUrls] = useState<string[]>(() => Array(MIN_FIELDS).fill(""));
+  const [error, setError] = useState<string | null>(null);
 
   function updateField(i: number, value: string) {
     setUrls((prev) => prev.map((u, idx) => (idx === i ? value : u)));
@@ -27,6 +31,24 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
   }
   function removeField(i: number) {
     setUrls((prev) => (prev.length <= MIN_FIELDS ? prev : prev.filter((_, idx) => idx !== i)));
+  }
+
+  function compare() {
+    const entries = urls.map((u) => u.trim()).filter(Boolean);
+    // De-duplicate case-insensitively while keeping the first spelling.
+    const seen = new Set<string>();
+    const unique = entries.filter((u) => {
+      const key = u.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    if (unique.length < 2) {
+      setError("Enter at least two different lists to compare.");
+      return;
+    }
+    sessionStorage.setItem(GROUP_URLS_KEY, JSON.stringify(unique));
+    router.push("/group/results");
   }
 
   // Close on Escape and lock background scroll while open.
@@ -99,6 +121,12 @@ export default function GroupModal({ open, onClose }: { open: boolean; onClose: 
           </div>
           <button type="button" className="ghost group-add" onClick={addField}>
             + Add list
+          </button>
+        </div>
+        {error ? <p className="error">{error}</p> : null}
+        <div className="modal-foot">
+          <button type="button" className="primary" onClick={compare}>
+            Compare lists
           </button>
         </div>
       </div>
